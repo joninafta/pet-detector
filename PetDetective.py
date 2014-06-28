@@ -10,6 +10,7 @@ import PIL
 from PIL import Image
 
 from gmail import send_mail_message, send_mail_image
+from camera_scripts import webcam_take_photo
 
     
 def image_resize(file_name, width): #pixels
@@ -28,11 +29,13 @@ try:
         print "PetDetective Started (CTRL+C to exit)"
         time.sleep(2)
         print "Ready"
-        cntr=0
+        
         detection_cntr = 0
-        file_name = "intruder-0000.jpg"
-        os.remove(file_name) if os.path.exists(file_name) else None
+        file_name = "intruder"
+        process = subprocess.Popen("sudo rm -rf intruder*.jpg", shell=True, stdout=subprocess.PIPE)
+        process.wait()                
         UseWebCam = True
+        num_photos_after_detect = 3
 
 # Focus DSLR
         if UseWebCam == False:
@@ -45,19 +48,15 @@ try:
             time.sleep(0.50)
             if GPIO.input(PIR_PIN) == 1:
                 if UseWebCam == True:
-                    command = "fswebcam -r 640x480 -d /dev/video0 " + file_name
-                    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-                    process.wait()
-                  #  image_resize(file_name, 480)
+                    webcam_take_photo("intruder",num_photos_after_detect,1)
                 else:
                     process = subprocess.Popen("sudo pktriggercord-cli --timeout 2 -o 'intruder' --af_mode=AF.S --flash_mode=Manual", shell=True, stdout=subprocess.PIPE)
                     process.wait()
                     image_resize(file_name, 1024)
-                send_mail_image(file_name)
+                send_mail_image(file_name,num_photos_after_detect)
                 detection_cntr = 0
-                os.remove(file_name) if os.path.exists(file_name) else None
-
-                
+                process = subprocess.Popen("sudo rm -rf intruder*.jpg", shell=True, stdout=subprocess.PIPE)
+                process.wait()                
 
                     
 except KeyboardInterrupt:
