@@ -35,7 +35,7 @@ try:
         process = subprocess.Popen("sudo rm -rf intruder*.jpg", shell=True, stdout=subprocess.PIPE)
         process.wait()                
         UseWebCam = True
-        num_photos_after_detect = 3
+        num_photos_after_detect = 4
 
 # Focus DSLR
         if UseWebCam == False:
