@@ -52,7 +52,9 @@ try:
         if GPIO.input(PIR_PIN) == 1:
             if UseWebCam == True:
                 #webcam_take_photo("intruder",num_photos_after_detect,1)
-                picamera_take_photo("intruder",num_photos_after_detect,1)
+                #picamera_take_photo("intruder",num_photos_after_detect,1)
+                process = subprocess.Popen("raspistill -w 1024 -h 768 -q 100 -vf -hf -ex night -o intruder%d.jpg -tl 1000 -t 3000", shell=True, stdout=subprocess.PIPE)
+                process.wait()          
             else:
                 process = subprocess.Popen("sudo pktriggercord-cli --timeout 2 -o 'intruder' --af_mode=AF.S --flash_mode=Manual", shell=True, stdout=subprocess.PIPE)
                 process.wait()

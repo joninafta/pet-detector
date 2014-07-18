@@ -7,7 +7,7 @@ with picamera.PiCamera() as camera:
     #Camera warm-up time
     #camera.shutter_speed = int(5e6)
     camera.rotation = 180
-    #camera.exposure_mode = 'night'
+    camera.exposure_mode = 'night'
     camera.capture('foo.jpg',use_video_port=False)
     
 
