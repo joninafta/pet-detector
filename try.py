@@ -1,10 +1,14 @@
-#from camera_scripts import webcam_take_photo
+import picamera
+import time
 
-#webcam_take_photo("try",5,0.2)
-filename="intruder"
-num=5
-filelist = []
-for i in range(1,num):
-    filelist[i] = filename+str(i)+".jpg"
+with picamera.PiCamera() as camera:
+    camera.resolution = (2048, 1536)
+    #camera.ISO = 800
+    #Camera warm-up time
+    #camera.shutter_speed = int(5e6)
+    camera.rotation = 180
+    #camera.exposure_mode = 'night'
+    camera.capture('foo.jpg',use_video_port=False)
+    
 
 

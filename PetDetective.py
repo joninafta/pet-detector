@@ -5,12 +5,15 @@ import thread
 
 import RPi.GPIO as GPIO
 import time
+import sys
 
 import PIL
 from PIL import Image
 
-from gmail import send_mail_message, send_mail_image
-from camera_scripts import webcam_take_photo
+sys.path.append("/home/pi/.local/lib/python2.7/site-packages/")
+
+from gmail import send_mail_image
+from camera_scripts import webcam_take_photo, picamera_take_photo
 
     
 def image_resize(file_name, width): #pixels
@@ -22,41 +25,42 @@ def image_resize(file_name, width): #pixels
     img = img.resize((basewidth, hsize))
     img.save(file_name)    
 
-try:
-        GPIO.setmode(GPIO.BCM)
-        PIR_PIN = 7
-        GPIO.setup(PIR_PIN, GPIO.IN)
-        print "PetDetective Started (CTRL+C to exit)"
-        time.sleep(2)
-        print "Ready"
-        
-        detection_cntr = 0
-        file_name = "intruder"
-        process = subprocess.Popen("sudo rm -rf intruder*.jpg", shell=True, stdout=subprocess.PIPE)
-        process.wait()                
-        UseWebCam = True
-        num_photos_after_detect = 4
+try:        
+    GPIO.setmode(GPIO.BCM)
+    PIR_PIN = 7
+    GPIO.setup(PIR_PIN, GPIO.IN)
+    print "PetDetective Started (CTRL+C to exit)"
+    time.sleep(2)
+    print "Ready"
+    
+    detection_cntr = 0
+    file_name = "intruder"
+    process = subprocess.Popen("sudo rm -rf intruder*.jpg", shell=True, stdout=subprocess.PIPE)
+    process.wait()                
+    UseWebCam = True
+    num_photos_after_detect = 4
 
 # Focus DSLR
-        if UseWebCam == False:
-            process = subprocess.Popen("sudo pktriggercord-cli --timeout 2 -f -o 'intruder'", shell=True, stdout=subprocess.PIPE)
-            process.wait()
-        
-        while True:
-            GPIO.wait_for_edge(PIR_PIN, GPIO.RISING)
-            print "Motion Detected!" + " (" + str(detection_cntr) + ")"
-            time.sleep(0.50)
-            if GPIO.input(PIR_PIN) == 1:
-                if UseWebCam == True:
-                    webcam_take_photo("intruder",num_photos_after_detect,1)
-                else:
-                    process = subprocess.Popen("sudo pktriggercord-cli --timeout 2 -o 'intruder' --af_mode=AF.S --flash_mode=Manual", shell=True, stdout=subprocess.PIPE)
-                    process.wait()
-                    image_resize(file_name, 1024)
-                send_mail_image(file_name,num_photos_after_detect)
-                detection_cntr = 0
-                process = subprocess.Popen("sudo rm -rf intruder*.jpg", shell=True, stdout=subprocess.PIPE)
-                process.wait()                
+    if UseWebCam == False:
+        process = subprocess.Popen("sudo pktriggercord-cli --timeout 2 -f -o 'intruder'", shell=True, stdout=subprocess.PIPE)
+        process.wait()
+    
+    while True:
+        GPIO.wait_for_edge(PIR_PIN, GPIO.RISING)
+        print "Motion Detected!" + " (" + str(detection_cntr) + ")"
+        time.sleep(0.50)
+        if GPIO.input(PIR_PIN) == 1:
+            if UseWebCam == True:
+                #webcam_take_photo("intruder",num_photos_after_detect,1)
+                picamera_take_photo("intruder",num_photos_after_detect,1)
+            else:
+                process = subprocess.Popen("sudo pktriggercord-cli --timeout 2 -o 'intruder' --af_mode=AF.S --flash_mode=Manual", shell=True, stdout=subprocess.PIPE)
+                process.wait()
+                image_resize(file_name, 1024)
+            send_mail_image(file_name,num_photos_after_detect)
+            detection_cntr = 0
+            process = subprocess.Popen("sudo rm -rf intruder*.jpg", shell=True, stdout=subprocess.PIPE)
+            process.wait()                
 
                     
 except KeyboardInterrupt:
