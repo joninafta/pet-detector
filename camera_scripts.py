@@ -23,7 +23,7 @@ def picamera_take_photo(file_name, num_photos, interval):
         #camera.exposure_mode = 'night'
         #camera.capture(file_name+str(i)+".jpg",use_video_port=False)
                   
-        process = subprocess.Popen("raspistill -w 1024 -h 768 -vf -hf -ex night -o intruder"+str(i)+".jpg", shell=True, stdout=subprocess.PIPE)
+        process = subprocess.Popen("raspistill -w 1024 -h 768 -q 15 -vf -hf -ex night -o intruder"+str(i)+".jpg", shell=True, stdout=subprocess.PIPE)
         process.wait()    
         time.sleep(interval)
             
