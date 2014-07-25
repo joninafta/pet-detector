@@ -46,9 +46,11 @@ try:
         process.wait()
     
     while True:
-        GPIO.wait_for_edge(PIR_PIN, GPIO.RISING)
+        if GPIO.input(PIR_PIN) == 0:
+            time.sleep(0.50)
+            continue
         print "Motion Detected!" + " (" + str(detection_cntr) + ")"
-        time.sleep(0.50)
+        time.sleep(0.2)
         if GPIO.input(PIR_PIN) == 1:
             if UseWebCam == True:
                 #webcam_take_photo("intruder",num_photos_after_detect,1)
