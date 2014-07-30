@@ -47,7 +47,7 @@ try:
     
     while True:
         if GPIO.input(PIR_PIN) == 0:
-            time.sleep(0.50)
+            time.sleep(0.25)
             continue
         print "Motion Detected!" + " (" + str(detection_cntr) + ")"
         time.sleep(0.2)
