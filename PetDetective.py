@@ -49,7 +49,7 @@ try:
         if GPIO.input(PIR_PIN) == 0:
             time.sleep(0.25)
             continue
-        print "Motion Detected!" + " (" + str(detection_cntr) + ")"
+        print "Motion Detected!"
         time.sleep(0.2)
         if GPIO.input(PIR_PIN) == 1:
             if UseWebCam == True:
