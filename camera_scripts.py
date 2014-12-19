@@ -1,8 +1,8 @@
-import pygame.camera 
+#import pygame.camera 
 import time
-import picamera
+#import picamera
 import subprocess
-pygame.camera.init()
+#pygame.camera.init()
 
 camera = picamera.PiCamera()
 camera.resolution = (1024, 768)
@@ -24,9 +24,9 @@ def webcam_take_photo(file_name, num_photos, interval):
     
 def picamera_take_photo(file_name, num_photos, interval):
     for i in range(1, num_photos+1):
-        camera.capture(file_name+str(i)+".jpg",use_video_port=False)
-        #process = subprocess.Popen("raspistill -w 1024 -h 768 --nopreview -q 15 -vf -hf -ex auto -o intruder"+str(i)+".jpg", shell=True, stdout=subprocess.PIPE)
-        #process.wait()    
+        #camera.capture(file_name+str(i)+".jpg",use_video_port=False)
+        process = subprocess.Popen("raspistill -w 1024 -h 768 --nopreview -q 15 -vf -hf -ex auto -o intruder"+str(i)+".jpg", shell=True, stdout=subprocess.PIPE)
+        process.wait()    
         time.sleep(interval)
             
         
