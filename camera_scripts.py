@@ -1,6 +1,6 @@
 import pygame.camera 
 import time
-#import picamera
+import picamera
 import subprocess
 pygame.camera.init()
 
