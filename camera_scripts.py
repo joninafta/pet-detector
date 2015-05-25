@@ -29,5 +29,13 @@ def picamera_take_photo(file_name, num_photos, interval):
         process.wait()    
         time.sleep(interval)
             
-        
+    
+def image_resize(file_name, width): #pixels
+    basewidth = width
+    img = Image.open(file_name)
+    wpercent = (basewidth / float(img.size[0]))
+    hsize = int((float(img.size[1]) * float(wpercent)))
+    #img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
+    img = img.resize((basewidth, hsize))
+    img.save(file_name)          
 

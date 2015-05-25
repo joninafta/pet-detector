@@ -15,20 +15,9 @@ sys.path.append("/home/pi/.local/lib/python2.7/site-packages/")
 from gmail import send_mail_image
 from camera_scripts import webcam_take_photo, picamera_take_photo
 
-    
-def image_resize(file_name, width): #pixels
-    basewidth = width
-    img = Image.open(file_name)
-    wpercent = (basewidth / float(img.size[0]))
-    hsize = int((float(img.size[1]) * float(wpercent)))
-    #img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
-    img = img.resize((basewidth, hsize))
-    img.save(file_name)    
 
-try:        
-    GPIO.setmode(GPIO.BCM)
-    PIR_PIN = 7
-    GPIO.setup(PIR_PIN, GPIO.IN)
+try:
+    sensor = gpio(7)       
     print "PetDetective Started (CTRL+C to exit)"
     time.sleep(2)
     print "Ready"
@@ -46,12 +35,12 @@ try:
         process.wait()
     
     while True:
-        if GPIO.input(PIR_PIN) == 0:
+        if sensor.MovementDetected() == False:
             time.sleep(0.25)
             continue
         print "Motion Detected!"
         time.sleep(0.2)
-        if GPIO.input(PIR_PIN) == 1:
+        if sensor.MovementDetected() == True:
             if UseWebCam == True:
                 #webcam_take_photo("intruder",num_photos_after_detect,1)
                 picamera_take_photo("intruder",num_photos_after_detect,1)
@@ -68,7 +57,6 @@ try:
                     
 except KeyboardInterrupt:
     print "Quit"
-    GPIO.cleanup()
 
 
 

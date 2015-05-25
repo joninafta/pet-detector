@@ -4,7 +4,11 @@ from email.Utils import COMMASPACE, formatdate
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEBase import MIMEBase
 from email import Encoders
-class email_class():
+import RPi.GPIO as GPIO
+
+############################################################################
+
+class email():
     
     def __init__(self,serviceName,configFile):
         config = ConfigParser.ConfigParser()
@@ -43,7 +47,19 @@ class email_class():
         self.server.sendmail(self.address, COMMASPACE.join(self.target), message.as_string())
 
 
+############################################################################
 
+class gpio():
+    def __init__(self,pir_pin = 7):
+        self.pir_pin = pir_pin
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(pir_pin, GPIO.IN)
 
-
-
+    def __del__(self):
+        GPIO.cleanup()
+        
+    def MovementDetected(self):
+        if GPIO.input(self.pir_pin) == 0:
+            return False
+        else:
+            return True
