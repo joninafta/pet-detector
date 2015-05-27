@@ -1,38 +1,24 @@
 #!/usr/bin/python
-import smtplib, os
-import subprocess
-import thread
-
-import RPi.GPIO as GPIO
+import os
 import time
 import sys
 
-import PIL
-from PIL import Image
+from PetDetectorEmailClass import email
+from PetDetectorGpioClass import gpio
+from PetDetectorCameraClass import camera
+
 
 sys.path.append("/home/pi/.local/lib/python2.7/site-packages/")
-
-from gmail import send_mail_image
-from camera_scripts import webcam_take_photo, picamera_take_photo
 
 
 try:
     sensor = gpio(7)       
+    cam = camera('piCamera','intruder')
+    mail = email('gmail','defaults.cfg')
+    
     print "PetDetective Started (CTRL+C to exit)"
     time.sleep(2)
     print "Ready"
-    
-    detection_cntr = 0
-    file_name = "intruder"
-    process = subprocess.Popen("sudo rm -rf intruder*.jpg", shell=True, stdout=subprocess.PIPE)
-    process.wait()                
-    UseWebCam = True
-    num_photos_after_detect = 4
-
-# Focus DSLR
-    if UseWebCam == False:
-        process = subprocess.Popen("sudo pktriggercord-cli --timeout 2 -f -o 'intruder'", shell=True, stdout=subprocess.PIPE)
-        process.wait()
     
     while True:
         if sensor.MovementDetected() == False:
@@ -41,19 +27,11 @@ try:
         print "Motion Detected!"
         time.sleep(0.2)
         if sensor.MovementDetected() == True:
-            if UseWebCam == True:
-                #webcam_take_photo("intruder",num_photos_after_detect,1)
-                picamera_take_photo("intruder",num_photos_after_detect,1)
-                
-            else:
-                process = subprocess.Popen("sudo pktriggercord-cli --timeout 2 -o 'intruder' --af_mode=AF.S --flash_mode=Manual", shell=True, stdout=subprocess.PIPE)
-                process.wait()
-                image_resize(file_name, 1024)
-            send_mail_image(file_name,num_photos_after_detect)
-            detection_cntr = 0
-            process = subprocess.Popen("sudo rm -rf intruder*.jpg", shell=True, stdout=subprocess.PIPE)
-            process.wait()                
-
+            #TakePhoto
+            cam.takePhoto(4,1)
+            mail.login()
+            mail.sendMail('Movement Detected','',cam.photosFileList)
+            cam.cleanLocalFiles()
                     
 except KeyboardInterrupt:
     print "Quit"

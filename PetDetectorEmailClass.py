@@ -1,12 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed May 27 22:05:16 2015
 
+@author: Jonathan
+"""
 import ConfigParser, os, smtplib
 from email.Utils import COMMASPACE, formatdate
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEBase import MIMEBase
 from email import Encoders
-import RPi.GPIO as GPIO
-
-############################################################################
 
 class email():
     
@@ -45,21 +47,3 @@ class email():
             part.add_header('Content-Disposition', 'attachment; filename="%s"' % os.path.basename(currentFile))
             message.attach(part)
         self.server.sendmail(self.address, COMMASPACE.join(self.target), message.as_string())
-
-
-############################################################################
-
-class gpio():
-    def __init__(self,pir_pin = 7):
-        self.pir_pin = pir_pin
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(pir_pin, GPIO.IN)
-
-    def __del__(self):
-        GPIO.cleanup()
-        
-    def MovementDetected(self):
-        if GPIO.input(self.pir_pin) == 0:
-            return False
-        else:
-            return True
